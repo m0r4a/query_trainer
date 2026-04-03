@@ -163,6 +163,7 @@ App A writes structured JSON logs to stdout. This requires the `| json` parser i
   "http_status_code": 200,
   "duration_ms": 45
 }
+```
 
 ### App B (Pipe-Separated Format)
 
@@ -194,8 +195,6 @@ Regardless of the log format, the OTel Collector extracts the following low-card
 | `version` | semver string |
 
 All other fields (including trace IDs and request IDs) remain in the log line and must be extracted at query time using LogQL's `| json` (for App A) or `| pattern` (for App B) operators.
-
----
 
 ## Trace Schema
 
@@ -244,45 +243,6 @@ Wait approximately 30 seconds for all services to initialize, then open Grafana 
 | Password | `queries_are_fun` |
 
 The dashboard named **Observability Query Trainer** is provisioned automatically. Datasources for Prometheus, Loki, and Tempo are provisioned automatically.
-
----
-
-## Repository Structure
-
-```
-observability-trainer/
-  docker-compose.yml
-  README.md
-  docs/
-    prometheus_patterns.md
-    loki_patterns.md
-    tempo_patterns.md
-  apps/
-    app-a/
-      main.go
-      Dockerfile
-    app-b/
-      main.go
-      Dockerfile
-    traffic-generator/
-      main.go
-      Dockerfile
-  otel-collector/
-    config.yaml
-  grafana/
-    provisioning/
-      datasources/
-        datasources.yaml
-      dashboards/
-        dashboards.yaml
-        trainer.json
-  prometheus/
-    prometheus.yml
-  loki/
-    config.yaml
-  tempo/
-    config.yaml
-```
 
 ---
 
