@@ -4,11 +4,10 @@ A self-contained learning environment designed to build practical fluency in Pro
 
 The goal is pattern fluency. Rather than memorizing how to calculate a specific metric (like CPU usage), every exercise is built around reusable query patterns that apply across any stack.
 
----
 
-## Philosophy
+## Why though?
 
-In the real world, you shouldn't memorize specific queries, you should have mental models. When calculating the success rate of a microservice operation, you aren't just doing `success / total`; you are applying a **ratio pattern**. This distinction matters because metric names change across exporters, Kubernetes versions, and organizations. The patterns do not.
+In the real world, you shouldn't memorize specific queries, you should have mental models. When calculating the success rate of a microservice operation, you aren't just doing `success / total`, you are applying a **ratio pattern**. This distinction matters because metric names change across exporters, Kubernetes versions, and organizations. The patterns do not.
 
 The three backends map to three distinct mental models:
 
@@ -16,7 +15,6 @@ The three backends map to three distinct mental models:
 - **Loki** deals in log streams. The fundamental skill is filtering and parsing structured logs, then optionally converting them into metrics.
 - **Tempo** deals in distributed traces. The fundamental skill is selecting spans by attribute and understanding the structural relationships between them.
 
----
 
 ## Architecture
 
