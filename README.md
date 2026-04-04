@@ -18,49 +18,43 @@ The three backends map to three distinct mental models:
 
 ## Architecture
 
+```mermaid
+flowchart TD
+    subgraph Architecture
+        TG["Traffic Generator<br>(Go)"]
+        AppA["App A<br>HTTP Server<br>NATS Publisher<br>OTel instrumented"]
+        AppB["App B<br>NATS Consumer<br>Postgres Writer<br>OTel instrumented"]
+        DB[(PostgreSQL)]
+        
+        TG -->|HTTP requests| AppA
+        AppA -->|NATS JetStream| AppB
+        AppB -->|SQL writes| DB
+    end
+
+    subgraph Telemetry
+        Grafana["Grafana"]
+        OTel["OTel Collector"]
+        Prom["Prometheus"]
+        Loki["Loki"]
+        Tempo["Tempo"]
+        NatsExp["NATS exporter"]
+        PgExp["postgres_exporter"]
+
+        AppA -->|OTLP| OTel
+        AppB -->|OTLP| OTel
+
+        OTel -->|metrics| Prom
+        OTel -->|logs| Loki
+        OTel -->|traces| Tempo
+
+        OTel -->|scrapes| NatsExp
+        OTel -->|scrapes| PgExp
+
+        Grafana -->|reads| Prom
+        Grafana -->|reads| Loki
+        Grafana -->|reads| Tempo
+    end
 ```
-                        +-------------------+
-                        |  Traffic Generator |
-                        |      (Go)          |
-                        +--------+----------+
-                                 |
-                          HTTP requests
-                                 |
-                        +--------v----------+
-                        |      App A         |
-                        |  HTTP Server       |
-                        |  NATS Publisher    |
-                        |  OTel instrumented |
-                        +--------+----------+
-                                 |
-                         NATS JetStream
-                                 |
-                        +--------v----------+
-                        |      App B         |
-                        |  NATS Consumer     |
-                        |  Postgres Writer   |
-                        |  OTel instrumented |
-                        +--------+----------+
-                                 |
-                          SQL writes
-                                 |
-                        +--------v----------+
-                        |    PostgreSQL       |
-                        +-------------------+
-
-Telemetry collection:
-
-App A, App B  --OTLP--> OTel Collector --metrics--> Prometheus
-                                        --logs-----> Loki
-                                        --traces---> Tempo
-
-NATS exporter --scrape--> OTel Collector --metrics--> Prometheus
-postgres_exporter --scrape--> OTel Collector --metrics--> Prometheus
-
-Grafana reads from: Prometheus, Loki, Tempo
-```
-
----
 
 ## Stack
 
