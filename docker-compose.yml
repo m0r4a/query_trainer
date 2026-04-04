@@ -1,0 +1,30 @@
+services:
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:12.4
+    ports:
+      - '3000:3000'
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=queries_are_fun
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      - '$PWD/apps/grafana/provisioning:/etc/grafana/provisioning'
+    restart: unless-stopped
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:v3.11.0-distroless
+    ports:
+      - '9090:9090'
+    volumes:
+      - prometheus-storage:/prometheus
+      - '$PWD/apps/prometheus/:/etc/config'
+    command:
+      - '--config.file=/etc/config/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    restart: unless-stopped
+
+volumes:
+  grafana-storage: {}
+  prometheus-storage: {}

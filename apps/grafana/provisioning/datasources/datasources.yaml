@@ -1,0 +1,21 @@
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    jsonData:
+      httpMethod: POST
+      manageAlerts: true
+      allowAsRecordingRulesTarget: true
+      prometheusType: Prometheus
+      prometheusVersion: 3.11.0
+      cacheLevel: 'Medium'
+      disableRecordingRules: false
+      seriesEndpoint: false
+      timeInterval: 15s # Prometheus scrape interval
+      incrementalQueryOverlapWindow: 10m
+      exemplarTraceIdDestinations:
+        - datasourceUid: my_tempo_uid
+          name: trace_id

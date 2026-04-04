@@ -1,0 +1,35 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 30s
+  body_size_limit: 50MB
+  sample_limit: 1500
+  target_limit: 30
+  label_limit: 30
+  label_name_length_limit: 200
+  label_value_length_limit: 200
+
+#otlp:
+#  promote_resource_attributes: ["k8s.cluster.name", "k8s.job.name", "k8s.namespace.name"]
+
+scrape_configs:
+  - job_name: prometheus
+    honor_labels: true
+    fallback_scrape_protocol: PrometheusText0.0.4
+    static_configs:
+      # TODO: add App A, App B, NATS and psql
+      - targets: ["localhost:9090", "localhost:9191"]
+
+storage:
+  tsdb:
+    out_of_order_time_window: 30m
+    stale_series_compaction_threshold: 0.5
+    retention:
+      time: 1d
+      size: 1GB
+      percentage: 10
+
+tracing:
+  endpoint: "tempo:4317"
+  client_type: "grpc"
+  timeout: 5s
+  compression: "gzip"
