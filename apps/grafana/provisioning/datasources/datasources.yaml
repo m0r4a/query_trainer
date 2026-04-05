@@ -26,14 +26,28 @@ datasources:
     access: proxy
     url: http://tempo:3200
     uid: tempo
-    # jsonData:
-    #   tracesToLogsV2:
-    #     datasourceUid: 'loki'
-    #     spanStartTimeShift: '-10m'
-    #     spanEndTimeShift: '10m'
-    #     customQuery: true
-    #   tracesToMetrics:
-    #     datasourceUid: 'prometheus'
-    #     spanStartTimeShift: '-10m'
-    #     spanEndTimeShift: '10m'
+    jsonData:
+      tracesToLogsV2:
+        datasourceUid: 'loki'
+        spanStartTimeShift: '-10m'
+        spanEndTimeShift: '10m'
+        customQuery: true
+      tracesToMetrics:
+        datasourceUid: 'prometheus'
+        spanStartTimeShift: '-10m'
+        spanEndTimeShift: '10m'
 
+  - name: Loki
+    type: loki
+    access: proxy
+    url: http://loki:3100
+    uid: loki
+    basicAuth: false
+    jsonData:
+      maxLines: 1000
+      derivedFields:
+        - datasourceUid: tempo
+          matcherRegex: "traceID=(\\w+)"
+          name: TraceID
+          url: '$${__value.raw}'
+          urlDisplayLabel: 'View Trace'

@@ -25,6 +25,26 @@ services:
       - '--storage.tsdb.path=/prometheus'
     restart: always
 
+  loki:
+    container_name: loki
+    image: grafana/loki:3.7.1
+    command:
+      - "-config.file=/etc/loki/config.yaml"
+      - "-target=all"
+    ports:
+      - 3101:3100
+      - 7946
+      - 9095
+    volumes:
+      - ./apps/loki/config.yaml:/etc/loki/config.yaml
+      - loki-storage:/loki
+    healthcheck:
+      test: [ "CMD", "/usr/bin/loki", "-health" ]
+      start_period: 30s
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   tempo:
     container_name: tempo
     image: grafana/tempo:2.10.3
@@ -38,10 +58,12 @@ services:
     environment:
      - OTEL_EXPORTER_OTLP_ENDPOINT=http://alloy:4318
     command:
-      - "-target=all -config.file=/etc/tempo.yaml"
+      - "-config.file=/etc/tempo.yaml"
+      - "-target=all"
     restart: always
 
 volumes:
   grafana-storage: {}
   prometheus-storage: {}
   tempo-storage: {}
+  loki-storage: {}
