@@ -25,7 +25,7 @@ flowchart TD
         AppA["App A<br>HTTP Server<br>NATS Publisher<br>OTel instrumented"]
         AppB["App B<br>NATS Consumer<br>Postgres Writer<br>OTel instrumented"]
         DB[(PostgreSQL)]
-        
+
         TG -->|HTTP requests| AppA
         AppA -->|NATS JetStream| AppB
         AppB -->|SQL writes| DB

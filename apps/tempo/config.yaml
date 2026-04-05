@@ -1,0 +1,61 @@
+server:
+  http_listen_port: 3200
+  grpc_listen_port: 9095
+  log_level: info
+  log_format: json
+
+distributor:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+        http:
+          endpoint: 0.0.0.0:4318
+
+metrics_generator:
+  processor:
+    service_graphs:
+      dimensions: [http.method, http.status_code]
+    span_metrics:
+      dimensions: [http.method, http.status_code, http.route]
+      enable_target_info: true
+  storage:
+    path: /var/tempo/generator/wal
+    remote_write:
+      - url: http://prometheus:9090/api/v1/write
+        send_exemplars: true
+
+query_frontend:
+  max_retries: 3
+  search:
+    duration_slo: 5s
+    throughput_bytes_slo: 1.073741824e+09
+  trace_by_id:
+    duration_slo: 5s
+
+querier:
+  max_concurrent_queries: 20
+  frontend_worker:
+    frontend_address: 127.0.0.1:9095
+
+storage:
+  trace:
+    backend: local
+    wal:
+      path: /var/tempo/wal
+    local:
+      path: /var/tempo/blocks
+    pool:
+      max_workers: 100
+      queue_depth: 10000
+    block:
+      bloom_filter_false_positive: 0.05
+      v2_encoding: zstd
+
+overrides:
+  defaults:
+    read:
+      max_search_duration: 12h
+    metrics_generator:
+      processors: [service-graphs, span-metrics]

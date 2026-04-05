@@ -10,7 +10,7 @@ services:
     volumes:
       - grafana-storage:/var/lib/grafana
       - '$PWD/apps/grafana/provisioning:/etc/grafana/provisioning'
-    restart: unless-stopped
+    restart: always
 
   prometheus:
     container_name: prometheus
@@ -23,8 +23,25 @@ services:
     command:
       - '--config.file=/etc/config/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
-    restart: unless-stopped
+    restart: always
+
+  tempo:
+    container_name: tempo
+    image: grafana/tempo:2.10.3
+    ports:
+      - "3200:3200" # tempo
+      - "4317:4317" # OTLP GRPC
+      - "4318:4318" # OTLP HTTP
+    volumes:
+      - ./apps/tempo/config.yaml:/etc/tempo.yaml
+      - tempo-storage:/var/tempo
+    environment:
+     - OTEL_EXPORTER_OTLP_ENDPOINT=http://alloy:4318
+    command:
+      - "-target=all -config.file=/etc/tempo.yaml"
+    restart: always
 
 volumes:
   grafana-storage: {}
   prometheus-storage: {}
+  tempo-storage: {}
